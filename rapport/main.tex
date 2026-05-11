@@ -1,307 +1,48 @@
-\documentclass[12pt,a4paper]{article}
+\documentclass[10pt]{article}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[french]{babel}
-\usepackage{amsmath, amssymb, amsthm}
+\usepackage[english]{babel}
+\usepackage{amsmath, amssymb}
 \usepackage{hyperref}
-\usepackage{geometry}
-\usepackage[numbers]{natbib}
+\usepackage[margin=2cm]{geometry}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{microtype}
 
-\geometry{top=2.5cm, bottom=2.5cm, left=3cm, right=3cm}
+\setlength{\parskip}{2pt}
+\setlength{\bibsep}{1pt plus 0.3ex}
 
-\newtheorem{theorem}{Théorème}[section]
-\newtheorem{definition}[theorem]{Définition}
-\newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{corollary}[theorem]{Corollaire}
-\newtheorem{remark}[theorem]{Remarque}
-
-\title{\textbf{Profondeur des réseaux de neurones :\\[0.3em]
-peut-on caractériser les fonctions qui la nécessitent ?}}
-\author{Zouhair Saitout \and Thibaud Crotta \and Romain Ben}
-\date{Mai 2026 --- Polytech Nice Sophia, MAM3}
+\title{\vspace{-1.5em}\textbf{Characterising functions for which neural network depth is strictly necessary}\vspace{-0.5em}}
+\author{\small Zouhair Saitout \and Thibaud Crotta \and Romain Ben\\[-2pt]\small Polytech Nice Sophia, MAM3}
+\date{\vspace{-1em}\small May 2026\vspace{-1em}}
 
 \begin{document}
-
 \maketitle
 
-\begin{abstract}
-La profondeur des réseaux de neurones est empiriquement déterminante pour leurs performances.
-Pourtant, le théorème d'approximation universelle garantit qu'un réseau à une seule couche
-cachée peut approcher n'importe quelle fonction continue. Ce paradoxe apparent se résout dès
-lors que l'on prend en compte le coût en neurones : pour certaines fonctions, tout réseau peu
-profond doit être exponentiellement plus large qu'un réseau profond pour atteindre la même
-précision. Ce phénomène, appelé \emph{séparation par profondeur}, est l'objet de ce rapport.
-Nous présentons les résultats théoriques qui l'établissent pour des familles spécifiques de
-fonctions, les tentatives de caractérisation générale, et les obstacles formels qui empêchent
-une réponse complète.
-\end{abstract}
+\section{Context}
+Deep neural networks dominate modern machine learning, from image recognition to language modelling and protein structure prediction. A common architectural feature of state-of-the-art models is depth: tens or hundreds of stacked layers. Empirically, deeper networks outperform wider but shallower ones at equal parameter count, suggesting that depth is not a contingent design choice but a fundamental source of expressive power. Yet classical approximation theory tells the opposite story: a single hidden layer already suffices to approximate any continuous function on a compact set \citep{cybenko89,hornik91}. This apparent paradox is resolved once the \emph{cost} of approximation, that is the number of neurons, is taken into account: for some target functions, every shallow network must be exponentially wider than a deep one to reach the same accuracy. This phenomenon is called \emph{depth separation}. The question we investigate is whether the class of functions that exhibit depth separation can be characterised mathematically, beyond the construction of isolated examples.
 
-\tableofcontents
-\newpage
+\section{Literature review}
 
-%%=============================================================
-%% SECTION 1 — Introduction et contexte  (Romain Ben)
-%%=============================================================
-\section{Introduction et contexte}
+\paragraph{Universal approximation, qualitative.}
+\citet{cybenko89} proved that a single-hidden-layer network with sigmoidal activations can approximate any $f \in \mathcal{C}([0,1]^d)$ in supremum norm. \citet{hornik91} extended this to any non-polynomial bounded activation, and \citet{pinkus99} surveyed the resulting theory of MLP approximation. These results are purely qualitative: they assert the existence of a width $N$ but give no control on its size, leaving open the possibility that $N$ depends exponentially on the target's complexity or on the input dimension.
 
-\subsection{Réseaux peu profonds, réseaux profonds : un constat empirique}
+\paragraph{Quantitative bounds and the curse of dimensionality.}
+\citet{barron93} bridged this gap for a specific class. If the target $f:\mathbb{R}^d\to\mathbb{R}$ has Fourier transform satisfying $C_f := \int \|\omega\|\,|\hat f(\omega)|\,\mathrm{d}\omega < \infty$, then a sigmoidal network with $N$ neurons attains squared $L^2$ error at most $C_f^2/N$, \emph{independently of $d$}. This shows that width alone suffices for the Barron class. For more general functions, however, no such dimension-free bound is known, and \citet{yarotsky17} showed that deep ReLU networks attain near-optimal approximation rates over Sobolev balls $W^{k,\infty}([0,1]^d)$ with depth scaling as $\log(1/\varepsilon)$, suggesting that depth becomes essential for smooth-but-rough targets.
 
-Depuis l'essor du \emph{deep learning} au début des années 2010, les réseaux de neurones
-profonds dominent un large éventail de tâches : reconnaissance d'images, traitement
-automatique des langues, jeux de stratégie, prédiction de structures protéiques. Un trait
-commun à ces succès est la profondeur : les architectures performantes comportent
-typiquement des dizaines, voire des centaines de couches.
+\paragraph{Proven depth separations.}
+A first family of separations exploits oscillation. \citet{telgarsky16} constructs the iterated triangle wave $t_k$ on $[0,1]$ and proves that any ReLU network of depth $\lfloor k/2 \rfloor$ approximating $t_k$ to constant accuracy requires at least $2^{k/6}$ neurons, while a network of depth $k$ achieves it with $O(k)$ neurons. \citet{montufar14} obtain a complementary geometric result: the number of linear regions of a ReLU network with $L$ layers and width $n$ grows as $\Theta((n/d)^{d(L-1)} n^d)$, exponentially in $L$ but only polynomially in $n$. \citet{eldan16} push the gap from depth $\Theta(k)$ down to depth $3$: they exhibit a radial function on $\mathbb{R}^d$ approximable by a depth-$3$ network of size polynomial in $d$, while every depth-$2$ approximation requires $\exp(\Omega(d))$ neurons. \citet{safran17} extend the depth--width trade-off to natural targets such as $f(x) = \|x\|_2$.
 
-Ce constat empirique pose une question théorique naturelle : la profondeur est-elle
-\emph{strictement nécessaire} à cette expressivité, ou pourrait-on obtenir des résultats
-équivalents avec un réseau large mais peu profond, au prix d'un nombre plus grand de
-neurones ?
+\paragraph{Towards a general characterisation.}
+\citet{daniely17} reformulates depth separation through low-degree polynomials: a depth-$2$ ReLU network with polynomially bounded weights cannot approximate a target whose restriction to $\mathbb{S}^{d-1}\times\mathbb{S}^{d-1}$ is far from low-degree polynomials. \citet{raghu17} measure expressivity via the trajectory length of curves through the network and show exponential growth in depth. The most complete characterisation to date is due to \citet{diakonikolas22}: on the sphere $\mathbb{S}^{d-1}$, a function is approximable by a polynomial-size depth-$2$ network if and only if its spherical Fourier spectrum is concentrated on harmonics of degree $O(\mathrm{polylog}\,d)$. This converts depth separation into a clean spectral condition, but only on the sphere.
 
-\subsection{Le théorème d'approximation universelle}
+\paragraph{Formal barriers.}
+\citet{vardi20} explain why a domain-free characterisation has remained elusive: every known separation proof relies, often implicitly, on the assumption that shallow-network weights are polynomially bounded. With unrestricted weights, a shallow network can simulate a deep one exactly, and all known separations collapse. This identifies the weight-magnitude regime as a structural component of any future characterisation.
 
-La première réponse théorique à cette question semble plaider pour l'inutilité de la
-profondeur. En 1989, Cybenko démontre qu'un réseau sigmoïdal à \emph{une seule couche
-cachée} est un approximateur universel \cite{cybenko89}.
+\section{Needs}
+The literature establishes that depth separation is real, geometrically interpretable, and provable for several explicit families, yet a domain-free necessary-and-sufficient condition is missing. Three concrete needs follow. First, the spectral characterisation of \citet{diakonikolas22} is restricted to the sphere and to $L^2$; extending it to general compact domains and to other norms would unify the existing examples under a single criterion. Second, the weight-magnitude barrier of \citet{vardi20} must be addressed head-on: any future criterion has to specify the weight regime under which separation is claimed, and the proof techniques have to remain valid when this regime is relaxed. Third, links with Boolean and arithmetic circuit complexity, where depth hierarchies such as $\mathrm{AC}^0 \subsetneq \mathrm{NC}^1$ are well understood, should be made formal: such transfer results would turn architectural choices for neural networks from empirical search into theory-driven design. Closing this gap is the open question this report aims to motivate.
 
-\begin{theorem}[Cybenko, 1989 \cite{cybenko89}]
-Soit $\sigma : \mathbb{R} \to \mathbb{R}$ une fonction sigmoïde continue
-(c'est-à-dire vérifiant $\lim_{t \to +\infty} \sigma(t) = 1$ et
-$\lim_{t \to -\infty} \sigma(t) = 0$). Pour toute fonction $f \in \mathcal{C}([0,1]^d)$
-et tout $\varepsilon > 0$, il existe $N \in \mathbb{N}$, des vecteurs $w_i \in \mathbb{R}^d$
-et des scalaires $a_i, b_i \in \mathbb{R}$ tels que
-\[
-  \sup_{x \in [0,1]^d} \left| f(x) - \sum_{i=1}^{N} a_i\,\sigma(w_i^\top x + b_i)
-  \right| < \varepsilon.
-\]
-\end{theorem}
-
-Hornik (1991) étend ce résultat à des activations non polynomiales mesurables localement
-bornées \cite{hornik91}, et Pinkus (1999) en donne une synthèse complète dans le cadre
-des MLP \cite{pinkus99}. Ces résultats établissent que, \emph{en théorie}, un réseau à une
-seule couche cachée suffit pour tout problème d'approximation continu.
-
-\subsection{La question du coût en neurones}
-
-Le théorème de Cybenko ne dit rien sur le nombre $N$ de neurones nécessaires. Il est
-parfaitement possible que ce nombre soit exponentiel en la dimension $d$ ou en $\varepsilon^{-1}$,
-rendant le résultat théoriquement correct mais pratiquement inopérant.
-
-Barron (1993) apporte une borne quantitative pour une classe particulière de fonctions
-\cite{barron93}. Pour toute fonction $f$ dont la transformée de Fourier est intégrable
-au premier ordre, c'est-à-dire vérifiant
-\[
-  C_f := \int_{\mathbb{R}^d} \|\omega\|\, |\hat{f}(\omega)|\, \mathrm{d}\omega < \infty,
-\]
-un réseau sigmoïdal à $N$ neurones peut atteindre une erreur quadratique intégrée bornée
-par $C_f^2 / N$, \emph{indépendamment de la dimension $d$}. Ce résultat remarquable
-contourne la malédiction de la dimensionnalité pour cette classe, et montre que la
-largeur seule suffit à contrôler l'approximation de ces fonctions.
-
-Cependant, la classe de Barron est restrictive. Pour des fonctions plus oscillantes ou
-à structure plus complexe, aucune borne analogue à dimension fixe n'est connue pour les
-réseaux peu profonds, et l'on peut montrer que le nombre de neurones requis croît
-exponentiellement.
-
-\subsection{La séparation par profondeur : problématique}
-
-La \emph{séparation par profondeur} désigne le phénomène par lequel certaines fonctions
-peuvent être approximées efficacement par un réseau profond (avec un nombre polynomial de
-paramètres), alors que tout réseau peu profond nécessite exponentiellement plus de neurones
-pour atteindre la même précision.
-
-Ce phénomène est maintenant établi pour plusieurs familles spécifiques de fonctions. La
-question centrale de ce rapport est la suivante :
-
-\begin{center}
-\textit{Peut-on caractériser mathématiquement la classe des fonctions pour lesquelles
-la profondeur est strictement nécessaire ?}
-\end{center}
-
-Autrement dit : existe-t-il une propriété analytique ou géométrique simple qui distingue
-les fonctions « depth-requiring » des autres, indépendamment des exemples particuliers ?
-Les sections suivantes montrent que des réponses partielles existent, mais qu'une
-caractérisation complète reste un problème ouvert.
-
-%%=============================================================
-%% SECTION 2 — Formalisme mathématique  (Zouhair Saitout)
-%%=============================================================
-\section{Formalisme mathématique}
-\label{sec:formalisme}
-
-% ===========================================================
-% TODO Zouhair — plan suggéré :
-%
-% 2.1  Définition formelle d'un réseau de neurones
-%      - réseau feedforward à $L$ couches, largeurs $n_0, n_1, \ldots, n_L$
-%      - formule de récurrence : h^{(0)}=x, h^{(l)} = \sigma(W^{(l)} h^{(l-1)} + b^{(l)})
-%      - profondeur = L, largeur = max_l n_l
-%
-% 2.2  Fonctions d'activation
-%      - sigmoïde (théorèmes classiques)
-%      - ReLU : \sigma(t) = \max(0,t) (résultats modernes)
-%
-% 2.3  Notion d'approximation
-%      - \varepsilon-approximation en norme \|\cdot\|_\infty ou L^2
-%      - complexité : N(\varepsilon, f, L) = nb minimal de neurones pour approcher f
-%        à précision \varepsilon avec un réseau de profondeur \leq L
-%
-% 2.4  Classes de fonctions
-%      - \mathcal{C}^k([0,1]^d) fonctions k-fois dérivables
-%      - espace de Sobolev W^{k,p}
-%      - classe de Barron (cf. Section 1)
-%
-% Sources principales : Pinkus (1999) \cite{pinkus99}, Yarotsky (2017) \cite{yarotsky17}
-% ===========================================================
-
-\textit{[Section à compléter par Zouhair.]}
-
-%%=============================================================
-%% SECTION 3 — Résultats de séparation  (Zouhair + Thibaud)
-%%=============================================================
-\section{Résultats de séparation par profondeur}
-\label{sec:separation}
-
-% ===========================================================
-% TODO Zouhair — Telgarsky (2016) et Montufar et al. (2014)
-%
-% 3.1  Fonctions zigzag de Telgarsky
-%      - Définir t_k : la k-ième itérée de la fonction dent de scie t(x)=2|x-1/2|
-%      - Théorème central : tout réseau de profondeur <= k/2 qui approche t_k
-%        à précision 1/2 doit avoir au moins 2^{k/6} neurones
-%        (alors qu'un réseau de profondeur k suffit avec O(k) neurones)
-%      - Source : \cite{telgarsky16}
-%
-% 3.2  Régions linéaires et profondeur (Montufar et al.)
-%      - Un réseau ReLU à $L$ couches de largeur $n$ peut avoir au plus
-%        O((n/d)^{d(L-1)} n^d) régions linéaires
-%      - En fixant le nombre total de neurones, ce maximum croît exponentiellement
-%        avec $L$ mais seulement polynomialement avec $n$
-%      - Source : \cite{montufar14}
-%
-% TODO Thibaud — Eldan & Shamir (2016)
-%
-% 3.3  Fonctions radiales (Eldan & Shamir)
-%      - Construire une fonction f : \mathbb{R}^d \to \mathbb{R} telle que
-%        f peut être approximée par un réseau ReLU à 3 couches de taille polynomiale en d
-%        mais tout réseau à 2 couches nécessite exp(d) neurones
-%      - La construction repose sur une fonction radiale fortement oscillante
-%      - Source : \cite{eldan16}
-% ===========================================================
-
-\textit{[Section à compléter par Zouhair (sous-sections 3.1--3.2) et Thibaud (sous-section 3.3).]}
-
-%%=============================================================
-%% SECTION 4 — Vers une caractérisation  (Thibaud Crotta)
-%%=============================================================
-\section{Vers une caractérisation mathématique}
-\label{sec:caracterisation}
-
-% ===========================================================
-% TODO Thibaud — plan suggéré :
-%
-% 4.1  Séparation via les polynômes de bas degré (Daniely 2017)
-%      - Tout réseau à 2 couches de taille polynomiale, à poids bornés, ne peut pas
-%        approcher f si f ne peut pas être approchée par un polynôme de bas degré
-%        sur \mathbb{S}^{d-1} \times \mathbb{S}^{d-1}
-%      - Source : \cite{daniely17}
-%
-% 4.2  Trade-offs profondeur-largeur (Safran & Shamir 2017)
-%      - Pour des "fonctions naturelles" (ex. : f(x) = \|x\|_2), montrer le trade-off
-%        entre profondeur et largeur pour maintenir la même précision
-%      - Source : \cite{safran17}
-%
-% 4.3  Longueur de trajectoire (Raghu et al. 2017)
-%      - Mesurer l'expressivité par la longueur de l'image d'un segment d'entrée
-%      - Cette longueur croît exponentiellement avec L pour les réseaux profonds
-%      - Source : \cite{raghu17}
-%
-% 4.4  Caractérisation par Fourier sphérique (Diakonikolas et al. 2022)
-%      - Sur la sphère S^{d-1}, une fonction est approchable par un réseau à
-%        1 couche cachée de taille poly(d) ssi son spectre de Fourier sphérique
-%        est concentré sur des fréquences basses (degré \leq O(polylog d))
-%      - C'est la caractérisation la plus complète connue à ce jour
-%      - Source : \cite{diakonikolas22}
-%
-% 4.5  Barrières formelles (Vardi et al. 2020) — peut être mis en 4.5 ou en conclusion
-%      - Source : \cite{vardi20}
-% ===========================================================
-
-\textit{[Section à compléter par Thibaud.]}
-
-%%=============================================================
-%% SECTION 5 — Conclusion et questions ouvertes  (Romain Ben)
-%%=============================================================
-\section{Conclusion et questions ouvertes}
-
-\subsection{Bilan des résultats}
-
-Les travaux présentés dans ce rapport forment un tableau nuancé de la séparation par profondeur.
-
-Du côté des résultats établis, plusieurs familles concrètes de fonctions admettent une séparation
-exponentielle prouvée. Les fonctions zigzag de Telgarsky (2016) -- itérations de la dent de scie --
-exigent exponentiellement plus de neurones d'un réseau de profondeur $\lfloor k/2 \rfloor$ que
-d'un réseau de profondeur $k$ pour approcher la même cible \cite{telgarsky16}. Montufar et al.
-(2014) montrent que le nombre de régions linéaires d'un réseau ReLU croît exponentiellement avec
-la profondeur à nombre total de paramètres fixé \cite{montufar14}, ce qui traduit une capacité
-d'expression fondamentalement supérieure des réseaux profonds. Eldan et Shamir (2016) construisent
-des fonctions radiales séparant les réseaux à deux couches des réseaux à trois couches par un
-facteur exponentiel en la dimension \cite{eldan16}.
-
-Ces résultats répondent positivement à la question « la séparation existe-t-elle ? ». En revanche,
-ils ne constituent pas une caractérisation : chacun exhibe une famille spécifique, sans
-condition nécessaire et suffisante générale.
-
-\subsection{Les barrières formelles}
-
-Un résultat récent de Vardi, Yehudai et Shamir (NeurIPS 2020) éclaire pourquoi cette
-caractérisation générale est difficile \cite{vardi20}. Les auteurs montrent que toutes les
-techniques actuelles de preuve de séparation reposent, de façon plus ou moins implicite, sur la
-contrainte que les poids du réseau peu profond soient bornés polynomialement. Si l'on autorise
-des poids exponentiellement grands, les séparations connues disparaissent : un réseau shallow à
-poids exponentiels peut simuler exactement un réseau profond.
-
-Cette observation constitue une \emph{barrière formelle} : toute future caractérisation devra
-préciser dans quel régime de poids la séparation est entendue, et les preuves devront s'appuyer
-sur des arguments qui ne s'effondrent pas dès que les poids ne sont plus bornés.
-
-\subsection{Vers une caractérisation : perspectives}
-
-Les travaux de Diakonikolas et al. (2022) sur la sphère $\mathbb{S}^{d-1}$ constituent la
-tentative de caractérisation la plus aboutie à ce jour \cite{diakonikolas22}. Ils établissent
-que, sur ce domaine, une fonction est efficacement approchable par un réseau à une couche cachée
-de taille polynomiale si et seulement si son spectre de Fourier sphérique est concentré sur des
-fréquences de degré $O(\operatorname{polylog} d)$. En dehors de la sphère, une telle
-caractérisation reste ouverte.
-
-Plusieurs directions semblent prometteuses :
-
-\begin{enumerate}
-  \item \textbf{Extension de la caractérisation spectrale.} Le critère de Diakonikolas et al.
-    est restreint à la sphère et à la norme $L^2$. Généraliser ce type de résultat à des domaines
-    arbitraires et à d'autres normes constituerait une avancée majeure.
-
-  \item \textbf{Liens avec la théorie de la complexité.} La séparation par profondeur dans les
-    réseaux de neurones est structurellement analogue à la séparation entre classes de circuits
-    booléens ($\mathrm{NC}^1$ vs. $\mathrm{AC}^0$). Des outils de complexité computationnelle,
-    notamment les bornes inférieures sur les circuits arithmétiques, pourraient fournir des
-    conditions nécessaires et suffisantes pour les classes de fonctions continues.
-
-  \item \textbf{Implications architecturales.} Mieux comprendre quelles fonctions nécessitent la
-    profondeur permettrait de guider le choix d'architecture pour des tâches spécifiques, en
-    remplacement du grid search empirique coûteux.
-\end{enumerate}
-
-En définitive, la question posée dans ce rapport reste ouverte dans toute sa généralité. La
-profondeur des réseaux de neurones n'est pas un simple artefact d'ingénierie : c'est un
-paramètre théoriquement fondamental dont la caractérisation précise constitue un défi au
-carrefour de l'approximation, de la géométrie et de la complexité computationnelle.
-
-%%=============================================================
-%% Bibliographie
-%%=============================================================
-\newpage
-\bibliographystyle{plainnat}
+\bibliographystyle{abbrvnat}
 \bibliography{biblio}
 
 \end{document}

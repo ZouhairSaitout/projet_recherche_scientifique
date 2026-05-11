@@ -33,13 +33,13 @@
 - Bornes quantitatives : Barron (1993)
 - La question du coût en neurones et la problématique
 
-### Section 2 — Formalisme mathématique (Zouhair) 🔲
+### Section 2 — Formalisme mathématique (Zouhair) ✅
 - Définitions : réseau de neurones, profondeur $L$, largeur $W$, $\varepsilon$-approximation
 - Activations : sigmoïde, ReLU
 - Classes de fonctions : $\mathcal{C}^k$, espaces de Sobolev
 - Sources : Pinkus (1999), Yarotsky (2017)
 
-### Section 3 — Résultats de séparation par profondeur (Zouhair + Thibaud) 🔲
+### Section 3 — Résultats de séparation par profondeur (Zouhair + Thibaud) ✅
 **Zouhair :**
 - Telgarsky (2016) : fonctions zigzag, séparation exponentielle entre profondeur $k$ et $\lfloor k/2 \rfloor$
 - Montufar et al. (2014) : nombre de régions linéaires, croissance exponentielle avec la profondeur
@@ -47,7 +47,7 @@
 **Thibaud :**
 - Eldan & Shamir (2016) : fonctions radiales, séparation 2 couches vs 3 couches
 
-### Section 4 — Vers une caractérisation mathématique (Thibaud) 🔲
+### Section 4 — Vers une caractérisation mathématique (Thibaud) ✅
 - Daniely (2017) : séparation depth-2 vs depth-3 via polynômes de bas degré
 - Safran & Shamir (2017) : trade-offs profondeur-largeur pour fonctions naturelles
 - Raghu et al. (2017) : longueur de trajectoire comme mesure d'expressivité
@@ -90,12 +90,12 @@
 │   └── biblio.bib        # Références BibTeX
 ├── slides/
 │   ├── slides_romain.md  # Contenu slides Romain ✅
-│   ├── slides_zouhair.md # TODO Zouhair
-│   └── slides_thibaud.md # TODO Thibaud
+│   ├── slides_zouhair.md # Contenu slides Zouhair ✅
+│   └── slides_thibaud.md # Contenu slides Thibaud ✅
 ├── script/
 │   ├── script_romain.md  # Script oral Romain ✅
-│   ├── script_zouhair.md # TODO Zouhair
-│   └── script_thibaud.md # TODO Thibaud
+│   ├── script_zouhair.md # Script oral Zouhair ✅
+│   └── script_thibaud.md # Script oral Thibaud ✅
 ├── biblio/               # 13 PDFs des articles
 └── README.md
 ```
@@ -108,3 +108,21 @@ Branches individuelles, merge sur `main` après relecture croisée :
 - `romain/rapport` — sections 1 & 5, structure LaTeX
 - `zouhair/rapport` — sections 2 & 3a
 - `thibaud/rapport` — sections 3b & 4
+
+---
+
+## Note sur la langue et le format du rapport
+
+Conformément au PDF de consigne, le rapport `rapport/main.tex` est rédigé **en anglais**, sur **2 pages maximum** bibliographie incluse, avec `\documentclass[10pt]{article}`. La structure imposée est : *context*, *literature review*, *needs* (sans contribution). Les contenus rédigés par chacun (sections 1–5 du plan ci-dessus) ont été condensés et fusionnés dans cette structure ; les détails de chaque thème restent dans les scripts oraux et les slides, qui eux sont **en français**.
+
+## Compilation du rapport
+
+```bash
+cd rapport
+pdflatex main.tex
+bibtex main
+pdflatex main.tex
+pdflatex main.tex
+```
+
+Ou via Overleaf : importer `rapport/main.tex` + `rapport/biblio.bib`.
