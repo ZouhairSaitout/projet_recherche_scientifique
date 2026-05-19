@@ -1,0 +1,75 @@
+\documentclass[10pt]{article}
+ 
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{hyperref}
+%\usepackage[margin=2cm]{geometry}
+\usepackage[numbers,sort&compress]{natbib}
+%\usepackage{microtype}
+ 
+%\setlength{\parskip}{4pt}
+%\setlength{\bibsep}{1pt plus 0.3ex}
+ 
+\title{\vspace{-1.5em}\textbf{Characterising functions for which neural network depth is
+strictly necessary}\vspace{-0.5em}}
+\author{Romain Ben \quad Thibaud Crotta \quad Zouhair Saitout \\[2pt]
+\small Polytech Nice Sophia, MAM3}
+\date{}
+ 
+\begin{document}
+\maketitle
+
+Deep neural networks owe much of their empirical superiority to depth: deeper architectures
+consistently outperform wider but shallower ones at equal parameter count, suggesting that depth
+is a fundamental source of expressive power rather than a contingent design choice. This stands
+in tension with classical universality results~\citep{cybenko89,hornik91}, which guarantee that
+a single hidden layer suffices to approximate any continuous function on a compact set. The
+paradox dissolves once approximation \emph{cost} is considered: for some targets, every shallow
+network must be exponentially wider than a deep one to reach the same accuracy. This phenomenon
+is called \emph{depth separation}, and the question we investigate is whether the class of
+functions exhibiting it admits a mathematical characterisation beyond isolated examples.
+
+The universality results of \citet{cybenko89} and \citet{hornik91}, surveyed by
+\citet{pinkus99}, give no control on the required width~$N$, leaving open an exponential
+dependence on complexity or input dimension~$d$. \citet{barron93} obtained a dimension-free
+bound for functions whose Fourier transform satisfies $C_f := \int\|\omega\|\,|\hat
+f(\omega)|\,\mathrm{d}\omega < \infty$: a sigmoidal network with $N$ neurons then achieves
+squared $L^2$ error at most $C_f^2/N$. For more general functions, \citet{yarotsky17} showed
+that deep ReLU networks attain near-optimal rates over Sobolev balls $W^{k,\infty}([0,1]^d)$
+with depth scaling as $\log(1/\varepsilon)$, indicating that depth becomes essential for
+smooth-but-rough targets.
+
+Several families of provable separations confirm this picture. \citet{telgarsky16} constructs
+the iterated triangle wave $t_k$ and proves that any shallow ReLU network approximating $t_k$
+to constant accuracy requires $2^{k/6}$ neurons, while depth~$k$ suffices with $O(k)$ neurons
+,a gap rooted in the fact that each layer at most doubles the number of linear pieces.
+\citet{montufar14} show that the number of linear regions grows exponentially in depth but only
+polynomially in width, confirming depth as the decisive factor for geometric expressivity.
+\citet{eldan16} sharpen the separation to a single layer boundary: a radial function
+approximable by a depth-$3$ network of polynomial size requires $\exp(\Omega(d))$ neurons at
+depth~$2$, with the obstruction located in the radial Fourier spectrum. \citet{safran17} extend
+this trade-off to natural targets such as $f(x)=\|x\|_2$.
+
+The search for a general characterisation has produced partial but precise results.
+\citet{daniely17} gives an algebraic sufficient condition for non-approximability by shallow
+networks, while \citet{raghu17} formalise expressivity via the exponential growth of curve
+lengths with depth. The most complete result is due to \citet{diakonikolas22}: on
+$\mathbb{S}^{d-1}$, a function is approximable by a polynomial-size depth-$2$ network if and
+only if its spherical Fourier spectrum concentrates on harmonics of degree
+$O(\mathrm{polylog}\,d)$, the only known necessary and sufficient condition, though
+restricted to the sphere and to $L^2$.
+
+A fundamental obstacle is identified by \citet{vardi20}: every known separation relies on
+polynomially bounded weights, and with unrestricted weights a shallow network can simulate any
+deep one exactly, collapsing all known separations. Any future characterisation must therefore
+specify this regime explicitly. Two broader gaps remain: extending the spectral criterion of
+\citet{diakonikolas22} to general compact domains, and formalising the connection with Boolean
+circuit complexity, where depth hierarchies such as $\mathrm{AC}^0\subsetneq\mathrm{NC}^1$ are
+well understood and could, if transferred, ground architectural design in rigorous theory.
+
+\bibliographystyle{abbrvnat}
+\bibliography{biblio}
+
+\end{document}
