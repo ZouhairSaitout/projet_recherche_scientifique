@@ -11,6 +11,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - The duplicate `Rapport.tex` at the root removed (same content as `rapport/main.tex`), the compiled report renamed `rapport/rapport.pdf`
 - README rewritten in English: the research question, the results of the review, the bibliography with links, getting started, repository structure and quality checks
 
+### Removed
+
+- `biblio/`, the PDFs of the thirteen papers reviewed: five were publisher versions that a public repository is not allowed to redistribute, and every reference is now linked from the README and `rapport/biblio.bib`
+
 ### Added
 
 - CI: report built with Tectonic (PDF as artifact), markdownlint and lychee and CodeQL on the workflows

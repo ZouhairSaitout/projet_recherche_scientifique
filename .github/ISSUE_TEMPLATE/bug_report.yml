@@ -16,7 +16,7 @@ body:
       options:
         - "Report (rapport/main.tex, rapport/biblio.bib)"
         - "Slides or talk scripts (slides/, script/)"
-        - "Bibliography (biblio/)"
+        - "Bibliography (rapport/biblio.bib)"
         - "CI / GitHub Actions"
     validations:
       required: true
