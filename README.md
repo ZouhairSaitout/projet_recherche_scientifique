@@ -23,7 +23,7 @@ A single hidden layer can approximate any continuous function on a compact set (
 
 ## 📚 Bibliography
 
-The thirteen references cited by the report, with the copies used for the review in `biblio/`.
+The thirteen references cited by the report (`rapport/biblio.bib`), each linked to its publisher or arXiv page. The papers themselves are not redistributed here.
 
 | Reference | Link |
 | --- | --- |
@@ -63,7 +63,6 @@ projet_recherche_scientifique/
 │   └── rapport.pdf          # compiled report
 ├── slides/                  # slides of the defence (pptx) and their content per speaker (French)
 ├── script/                  # talk script per speaker (French)
-├── biblio/                  # the papers reviewed
 ├── .github/                 # CI, CodeQL, Dependabot, issue forms, pull request template
 ├── CITATION.cff             # citation metadata
 └── CHANGELOG.md             # history of the versions
@@ -84,4 +83,4 @@ projet_recherche_scientifique/
 
 ## 📄 License
 
-The report, slides and scripts are licensed under the [MIT License](LICENSE). The papers in `biblio/` belong to their authors and publishers and are kept for the review only.
+The report, slides and scripts are licensed under the [MIT License](LICENSE). The papers reviewed belong to their authors and publishers: the README links to them instead of redistributing them.
