@@ -72,7 +72,7 @@ projet_recherche_scientifique/
 ## ✅ Quality
 
 - **CI** (`.github/workflows/ci.yml`): the report is built with Tectonic and uploaded as an artifact, the Markdown files are checked with markdownlint and lychee.
-- **CodeQL** on the workflows, **Dependabot** for the GitHub Actions, **dependency review** on pull requests.
+- **CodeQL** on the workflows, **Dependabot** for the GitHub Actions.
 
 ## 👥 Authors
 
