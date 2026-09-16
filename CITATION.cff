@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "If you use this project, please cite it using the metadata below."
+type: software
+title: "Characterising functions for which neural network depth is strictly necessary: a literature review"
+abstract: >-
+  Literature review written for the introduction to scientific research
+  course at Polytech Nice Sophia (MAM3). It surveys the depth separation
+  results of neural network theory, from the universality theorems of
+  Cybenko and Hornik to the spectral characterisation of Diakonikolas et
+  al. and the barriers of Vardi et al., and asks whether the functions that
+  need depth admit a mathematical characterisation.
+authors:
+  - given-names: Zouhair
+    family-names: Saitout
+    affiliation: "Polytech Nice Sophia, Université Côte d'Azur"
+  - given-names: Thibaud
+    family-names: Crotta
+    affiliation: "Polytech Nice Sophia, Université Côte d'Azur"
+  - given-names: Romain
+    family-names: Ben
+    affiliation: "Polytech Nice Sophia, Université Côte d'Azur"
+version: 1.0.0
+date-released: 2026-05-19
+license: MIT
+repository-code: "https://github.com/ZouhairSaitout/projet_recherche_scientifique"
+keywords:
+  - neural networks
+  - depth separation
+  - approximation theory
+  - expressivity
+  - literature review
+  - LaTeX

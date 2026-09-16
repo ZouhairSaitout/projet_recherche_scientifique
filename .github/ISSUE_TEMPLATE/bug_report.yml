@@ -1,0 +1,55 @@
+name: Bug report
+description: Report a wrong result, a script or report that no longer builds, or a problem in the documentation.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug.
+        Please do not report security vulnerabilities here: follow the [security policy](https://github.com/ZouhairSaitout/projet_recherche_scientifique/blob/main/SECURITY.md) instead.
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - "Report (rapport/main.tex, rapport/biblio.bib)"
+        - "Slides or talk scripts (slides/, script/)"
+        - "Bibliography (biblio/)"
+        - "CI / GitHub Actions"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened, and what did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: The commands you ran, from a fresh clone if possible.
+      placeholder: |
+        cd rapport
+        tectonic -X compile main.tex
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Output and traceback
+      description: Paste the relevant output. It is formatted as code automatically.
+      render: shell
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Operating system and tool versions.
+      placeholder: "Windows 11, Tectonic 0.17.0"
